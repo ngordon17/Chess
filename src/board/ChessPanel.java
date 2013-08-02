@@ -33,9 +33,11 @@ public class ChessPanel extends JPanel {
 	private ChessPanel(ChessPanel panel) {
 		setLayout(new BorderLayout());
 		myIcon = panel.myIcon;
-		if (panel.myPiece != null) {myPiece = panel.myPiece.clone();}
 		myRow = panel.myRow;
-		myCol = panel.myCol;	
+		myCol = panel.myCol;
+		if (panel.myPiece != null) {
+			add(panel.myPiece.clone());
+		}	
 	}
 	
 	private void setIcon(int row, int col) {
@@ -57,7 +59,9 @@ public class ChessPanel extends JPanel {
 	@Override
 	public Component add(Component component) {
 		if (component instanceof AbstractPiece) {
+			removePiece();
 			myPiece = (AbstractPiece) component;
+			myPiece.setBoardLocation(myRow, myCol);
 		}
 		return super.add(component);
 	}
@@ -73,7 +77,14 @@ public class ChessPanel extends JPanel {
 	
 	public void removePiece() {
 		if (myPiece != null) {remove(myPiece);}
-		myPiece = null;
-		
+		myPiece = null;	
+	}
+	
+	public int getRow() {
+		return myRow;
+	}
+	
+	public int getCol() {
+		return myCol;
 	}
 }

@@ -1,8 +1,12 @@
 package pieces;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+
+import board.ChessBoard;
+import board.ChessPanel;
 
 @SuppressWarnings("serial")
 public abstract class AbstractPiece extends JLabel {
@@ -31,6 +35,30 @@ public abstract class AbstractPiece extends JLabel {
 	protected abstract String getPieceName();
 	public abstract ImageIcon getImageIcon(boolean isWhite);
 	public abstract List<AbstractPiece> manufactureInitialPieces();
+	public abstract List<ChessPanel> getLegalMoves(ChessBoard board);
+
+	protected List<ChessPanel> getLegalMovesHelper(ChessBoard board, int deltaR, int deltaC) {
+		List<ChessPanel> legal = new ArrayList<ChessPanel>();
+		int row = myRow + deltaR;
+		int col = myCol + deltaC;
+		ChessPanel panel;
+		
+		while ((panel = board.getPanel(row, col)) != null) {
+			AbstractPiece piece = panel.getPiece();
+			if (piece != null) {
+				if (piece.isWhite() != isWhite) {legal.add(panel);}
+				break;
+			}
+			legal.add(panel);
+			row += deltaR;
+			col += deltaC;
+		}
+		return legal;
+	}
+	
+	public boolean isLegalMove(ChessBoard board, ChessPanel panel) {
+		return getLegalMoves(board).contains(panel);
+	}
 	
 	@Override
 	public String toString() {
@@ -49,4 +77,9 @@ public abstract class AbstractPiece extends JLabel {
 	public boolean isWhite() {
 		return isWhite;
 	}	
+	
+	public void setBoardLocation(int row, int col) {
+		myRow = row;
+		myCol = col;
+	}
 }

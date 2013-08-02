@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import board.ChessBoard;
+import board.ChessPanel;
 
 @SuppressWarnings("serial")
 public class Knight extends AbstractPiece {
@@ -53,5 +54,20 @@ public class Knight extends AbstractPiece {
 	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new Knight());
+	}
+
+	@Override
+	public List<ChessPanel> getLegalMoves(ChessBoard board) {
+		List<ChessPanel> legal = new ArrayList<ChessPanel>();
+		ChessPanel panel;
+		for (int row = -1; row <= 1; row+=2) {
+			for (int col = -1; col <= 1; col +=2) {
+				if ((panel = board.getPanel(myRow + 2*row, myCol + col)) != null && (panel.getPiece() == null || panel.getPiece().isWhite() != isWhite)) {legal.add(panel);}
+				if ((panel = board.getPanel(myRow + row, myCol + 2*col)) != null && (panel.getPiece() == null || panel.getPiece().isWhite() != isWhite)) {legal.add(panel);}
+			}
+		}
+		
+		
+		return legal;
 	}
 }

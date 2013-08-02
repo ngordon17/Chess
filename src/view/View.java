@@ -1,16 +1,12 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JScrollPane;
-
 import board.ChessBoard;
 import board.ChessBoardMouseAdapter;
-
 import controller.Controller;
 
 @SuppressWarnings("serial")
@@ -49,7 +45,7 @@ public class View extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(ChessBoard.getInstance());
 		layeredPane.add(scrollPane);
 		
-		ChessBoardMouseAdapter adapter = new ChessBoardMouseAdapter(myController, scrollPane, layeredPane);
+		ChessBoardMouseAdapter adapter = new ChessBoardMouseAdapter(myController, layeredPane);
 		layeredPane.addMouseListener(adapter);
 		layeredPane.addMouseMotionListener(adapter);
 		scrollPane.addMouseListener(adapter);

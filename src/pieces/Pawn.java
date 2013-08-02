@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import board.ChessBoard;
+import board.ChessPanel;
 
 @SuppressWarnings("serial")
 public class Pawn extends AbstractPiece {
@@ -53,5 +54,29 @@ public class Pawn extends AbstractPiece {
 	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new Pawn());
+	}
+
+	private int negate(int num) {
+		if (!isWhite) {return num;}
+		return -1 * num;
+	}
+	
+	private boolean hasMoved() {
+		if (isWhite) {return myRow != ChessBoard.BOARD_SIZE - 2;}
+		return myRow != 1;
+	}
+	
+	@Override
+	public List<ChessPanel> getLegalMoves(ChessBoard board) {
+		List<ChessPanel> legal = new ArrayList<ChessPanel>();
+		ChessPanel panel;
+		if ((panel = board.getPanel(myRow + negate(1), myCol)) != null && (panel.getPiece() == null || panel.getPiece().isWhite() != isWhite)) {legal.add(panel);}
+		if (panel != null && panel.getPiece() == null && !hasMoved() && ((panel = board.getPanel(myRow + negate(2), myCol)) != null) && (panel.getPiece() == null || panel.getPiece().isWhite() != isWhite)) {legal.add(panel);}
+		
+		for (int col = -1 ; col <= 1; col += 2) {
+			if ((panel = board.getPanel(myRow + negate(1), myCol + col)) != null && panel.getPiece() != null && panel.getPiece().isWhite() != isWhite) {legal.add(panel);}
+		}
+		
+		return legal;
 	}
 }

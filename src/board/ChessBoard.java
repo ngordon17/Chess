@@ -22,7 +22,7 @@ public class ChessBoard extends JPanel {
 	private static ChessBoard myInstance;
 	private static Stack<ChessBoard> myUndoInstances;
 	
-	private ChessBoard() {
+	private ChessBoard() {	
 		reset();		
 	}
 	
@@ -31,10 +31,10 @@ public class ChessBoard extends JPanel {
 		for (int row = 0; row < BOARD_SIZE; row++) {
 			for (int col = 0; col < BOARD_SIZE; col++) {
 				tiles[row][col] = board.myPanels[row][col].clone();
+				add(tiles[row][col]);
 			}
 		}
 		myPanels = tiles;
-		myInstance = this;
 	}
 	
 	
@@ -60,16 +60,22 @@ public class ChessBoard extends JPanel {
 	public void undoMove() {
 		if (myUndoInstances.isEmpty() || myUndoInstances.size() == 1) {return;}
 		myUndoInstances.pop();
-		myInstance = myUndoInstances.pop();
+		myPanels = myUndoInstances.pop().myPanels; 	
+		removeAll();
+		for (int row = 0; row < BOARD_SIZE; row++) {
+			for (int col = 0; col < BOARD_SIZE; col++) {
+				add(myPanels[row][col]);
+			}
+		}		
 		revalidate();
 		repaint();
 	}
 	
-	public void reset() {
+	public void reset() {		
 		removeAll();
 		setLayout(new GridLayout(BOARD_SIZE, BOARD_SIZE, 0, 0));
 		setPreferredSize(new Dimension(ChessPanel.PREFERRED_SIZE.width * BOARD_SIZE + 2*BORDER_SIZE, ChessPanel.PREFERRED_SIZE.height * BOARD_SIZE + 2*BORDER_SIZE));
-		setBorder(BorderFactory.createMatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_COLOR));
+		setBorder(BorderFactory.createMatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_COLOR));	
 		
 		myPanels = new ChessPanel[BOARD_SIZE][BOARD_SIZE];
 		for (int row = 0; row < BOARD_SIZE; row++) {
@@ -80,8 +86,14 @@ public class ChessBoard extends JPanel {
 		}
 		initializePieces();
 		initializeUndoInstances();
-	
+		revalidate();
+		repaint();
 	}	
+	
+	public ChessPanel getPanel(int row, int col) {
+		if (row >= BOARD_SIZE || row < 0 || col >= BOARD_SIZE || col < 0) {return null;}
+		return myPanels[row][col];
+	}
 	
 	private List<PieceFactory> getFactoryList() {
 		List<PieceFactory> factoryList = new ArrayList<PieceFactory>();
@@ -102,5 +114,55 @@ public class ChessBoard extends JPanel {
 				myPanels[piece.getRow()][piece.getCol()].add(piece);
 			}
 		}
+	}
+	
+	public ChessPanel findKing(ChessBoard board, boolean isWhite) {
+		for (int row = 0; row < ChessBoard.BOARD_SIZE; row++) {
+			for (int col = 0; col < ChessBoard.BOARD_SIZE; col++) {
+				ChessPanel panel = board.myPanels[row][col];
+				AbstractPiece piece = panel.getPiece();
+				if (piece != null && (piece instanceof King) && piece.isWhite() == isWhite) {return panel;}
+			}
+		}
+		return null;		
+	}
+	
+	public List<AbstractPiece> findOpposingPieces(ChessBoard board, boolean isWhite) {
+		List<AbstractPiece> pieces = new ArrayList<AbstractPiece>();
+		for (int row = 0; row < ChessBoard.BOARD_SIZE; row++) {
+			for (int col = 0; col < ChessBoard.BOARD_SIZE; col++) {
+				ChessPanel panel = board.myPanels[row][col];
+				AbstractPiece piece = panel.getPiece();
+				if (piece != null && piece.isWhite() != isWhite) {
+					pieces.add(piece);
+				}
+			}
+		}
+		return pieces;
+	}
+	
+	public void printBoard(ChessBoard board, String header) {	
+		ChessPanel[][] panels = board.myPanels;
+		System.out.println("\n" + header + "\n");
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if ( panels[i][j].getPiece() == null) {System.out.print(String.format("|%10s|", "Empty"));}
+				else {System.out.print(String.format("|%10s|", panels[i][j].getPiece().toString() ));}	
+			}
+			System.out.println();
+		}	
+	}
+	
+	public ChessBoard mockMove(ChessPanel start, ChessPanel end) {
+		ChessBoard copy = clone();
+		ChessPanel startCopy = copy.getPanel(start.getRow(), start.getCol());
+		ChessPanel endCopy = copy.getPanel(end.getRow(), end.getCol());
+		
+		AbstractPiece piece = startCopy.getPiece();
+		startCopy.removePiece();
+		endCopy.removePiece();
+		endCopy.add(piece);
+
+		return copy;
 	}
 }

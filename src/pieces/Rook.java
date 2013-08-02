@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import board.ChessBoard;
+import board.ChessPanel;
 
 @SuppressWarnings("serial")
 public class Rook extends AbstractPiece {
@@ -53,5 +54,15 @@ public class Rook extends AbstractPiece {
 	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new Rook());
+	}
+
+	@Override
+	public List<ChessPanel> getLegalMoves(ChessBoard board) {
+		List<ChessPanel> legal = new ArrayList<ChessPanel>();
+		legal.addAll(getLegalMovesHelper(board, 1,0));
+		legal.addAll(getLegalMovesHelper(board, -1,0));
+		legal.addAll(getLegalMovesHelper(board, 0,1));
+		legal.addAll(getLegalMovesHelper(board, 0,-1));	
+		return legal;
 	}
 }
