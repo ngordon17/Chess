@@ -5,6 +5,10 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import board.ChessBoard;
 import board.ChessPanel;
 
@@ -91,5 +95,15 @@ public abstract class AbstractPiece extends JLabel {
 
 	public void setHasMoved(boolean moved) {
 		hasMoved = moved;	
+	}
+
+	public Element savePiece(Document doc) {
+		Element piece = doc.createElement("piece");
+		piece.setAttribute("row", Integer.toString(myRow));
+		piece.setAttribute("col", Integer.toString(myCol));
+		piece.setAttribute("hasMoved", Boolean.toString(hasMoved));
+		piece.setAttribute("isWhite", Boolean.toString(isWhite));
+		piece.setAttribute("name", toString());
+		return piece;
 	}
 }

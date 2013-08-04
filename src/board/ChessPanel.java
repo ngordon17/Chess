@@ -10,6 +10,9 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import controller.Controller;
 
 import pieces.AbstractPiece;
@@ -102,5 +105,20 @@ public class ChessPanel extends JPanel {
 		else {this.setBorder(null);}
 		revalidate();
 		repaint();
+	}
+
+	public Element savePanel(Document doc) {
+		Element panel = doc.createElement("panel");
+		panel.setAttribute("row", Integer.toString(myRow));
+		panel.setAttribute("col", Integer.toString(myCol));
+		panel.setAttribute("iconpath", myIcon.toString());
+		
+		if (myPiece != null) {
+			panel.appendChild(myPiece.savePiece(doc));
+		}
+		
+		return panel;
+		
+		
 	}
 }

@@ -1,9 +1,15 @@
 package controller;
+import java.io.File;
 import java.util.List;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -19,6 +25,7 @@ import board.ChessBoard;
 import board.ChessPanel;
 
 public class Controller {
+	private static final String SAVE_DIRECTORY = "/Users/yankeenjg/Documents/workspace/Chess/src/saves";
 	private static ChessBoard myBoard;
 	private View myView;
 	private Player[] myPlayers;
@@ -137,20 +144,39 @@ public class Controller {
 	
 	public void saveGame() {
 		try {
+			
+			JFileChooser chooser = new JFileChooser();
+			chooser.setCurrentDirectory(new File(SAVE_DIRECTORY));
+			int save = chooser.showSaveDialog(myView);
+			
+			
+			if (save != JFileChooser.APPROVE_OPTION) {return;}
+			String file = chooser.getSelectedFile() + ".xml";
+			
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("game");
-			doc.appendChild(rootElement);				
+			Element root = doc.createElement("game");
+			doc.appendChild(root);
+			saveSettings(doc, root);
+			root.appendChild(myBoard.saveBoard(doc));
 			
-		} catch (Exception e) {e.printStackTrace();}
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File(file));
+			transformer.transform(source,  result);
+			JOptionPane.showMessageDialog(myView, "File Saved!", "File Saved!", JOptionPane.INFORMATION_MESSAGE);
+						
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(myView, "Save Failed!", "Error!", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();}
 	}
 	
-	private void saveSettings(Document doc, Element rootElement) {
+	private void saveSettings(Document doc, Element root) {
 		Element settings = doc.createElement("settings");
-		Attr attr = doc.createAttribute("highlight");
-		attr.setValue("true");
-		
+		settings.setAttribute("highlight", "true");
+		root.appendChild(settings);		
 	}
 	
 

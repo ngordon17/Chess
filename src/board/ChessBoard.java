@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Stack;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import pieces.*;
 
 @SuppressWarnings("serial")
@@ -179,5 +183,19 @@ public class ChessBoard extends JPanel {
 			if (!(piece instanceof King) && piece.isLegalMove(board, panel)) {return true;}
 		}
 		return false;
+	}
+
+	public Element saveBoard(Document doc) {
+		Element board = doc.createElement("board");
+		Element panels = doc.createElement("panels");
+		
+		for (ChessPanel[] rows : myPanels) {
+			for (ChessPanel panel : rows) {
+				panels.appendChild(panel.savePanel(doc));
+			}
+		}
+		
+		board.appendChild(panels);
+		return board;	
 	}
 }
