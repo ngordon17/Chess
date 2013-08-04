@@ -14,7 +14,7 @@ public class Queen extends AbstractPiece {
 	private static final String BLACK_IMAGE_PATH = "src/resources/Black_Queen.png";
 	private static final String QUEEN_NAME = "Queen";
 	
-	private Queen(int row, int col, boolean white) {
+	public Queen(int row, int col, boolean white) {
 		super(row, col, white);
 	}
 	

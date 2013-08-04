@@ -10,8 +10,7 @@ import javax.swing.JMenuItem;
 import controller.Controller;
 
 @SuppressWarnings("serial")
-public class ChessMenuBar extends JMenuBar {
-	
+public class ChessMenuBar extends JMenuBar {	
 	private Controller myController;
 	
 	public ChessMenuBar(Controller controller) {
@@ -19,6 +18,7 @@ public class ChessMenuBar extends JMenuBar {
 		
 		initFileMenu();
 		initMovesMenu();
+		initSettingsMenu();
 	}
 	
 	private void initFileMenu() {
@@ -47,8 +47,28 @@ public class ChessMenuBar extends JMenuBar {
 	
 		add(editMenu);
 	}
-
 	
+	private void initSettingsMenu() {
+		JMenu settingsMenu = new JMenu("Settings");
+		
+		JMenu highlightMoves = new JMenu("Highlight Legal Moves");
+		
+		JMenuItem on = new JMenuItem("On");
+		on.addActionListener(new HighlightMovesAction(true));
+		highlightMoves.add(on);
+		on.setEnabled(true);
+		
+		JMenuItem off = new JMenuItem("Off");
+		off.addActionListener(new HighlightMovesAction(false));
+		highlightMoves.add(off);
+		off.setEnabled(true);
+		
+		settingsMenu.add(highlightMoves);
+		highlightMoves.setEnabled(true);
+		
+		add(settingsMenu);	
+	}
+
 	private class NewGameAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			myController.newGame();
@@ -64,6 +84,18 @@ public class ChessMenuBar extends JMenuBar {
 	private class UndoMoveAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			myController.undoMove();
+		}
+	}
+	
+	private class HighlightMovesAction implements ActionListener {
+		private boolean isEnabled = false;
+		
+		public HighlightMovesAction(boolean enabled) {
+			isEnabled = enabled;
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			Controller.highlightLegalMoves = isEnabled;
 		}
 	}
 }

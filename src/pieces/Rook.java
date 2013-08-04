@@ -57,7 +57,7 @@ public class Rook extends AbstractPiece {
 	}
 
 	@Override
-	public List<ChessPanel> getLegalMoves(ChessBoard board) {
+	public List<ChessPanel> getLegalMoves(ChessBoard board) {		
 		List<ChessPanel> legal = new ArrayList<ChessPanel>();
 		legal.addAll(getLegalMovesHelper(board, 1,0));
 		legal.addAll(getLegalMovesHelper(board, -1,0));

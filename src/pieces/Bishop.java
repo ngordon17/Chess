@@ -65,8 +65,4 @@ public class Bishop extends AbstractPiece {
 		legal.addAll(getLegalMovesHelper(board, -1,-1));	
 		return legal;
 	}
-
-
-
-
 }

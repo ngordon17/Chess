@@ -25,6 +25,7 @@ public class ChessBoardMouseAdapter extends MouseAdapter {
 	
 	private void reset() {
 		if (myPiece != null) {
+			myController.highlightLegalMoves(myPiece, false);
 			myLayeredPane.remove(myPiece);
 			myLayeredPane.revalidate();
 			myLayeredPane.repaint();
@@ -41,7 +42,7 @@ public class ChessBoardMouseAdapter extends MouseAdapter {
 	@Override
 	public void mousePressed(MouseEvent event) {
 		ChessBoard board = ChessBoard.getInstance();
-		myBoard = board.clone();
+		//myBoard = board.clone();
 		Component component = board.getComponentAt(translatePoint(board, event));
 		if (component instanceof ChessPanel) {
 			myClickedPanel = (ChessPanel) component;
@@ -51,11 +52,13 @@ public class ChessBoardMouseAdapter extends MouseAdapter {
 			reset();
 			return;
 		}
+		myBoard = board.clone();
+		myController.highlightLegalMoves(myPiece, true);
 		myClickedPanel.removePiece();
 		try {myLayeredPane.add(myPiece, JLayeredPane.DRAG_LAYER);} 
 		catch (IllegalArgumentException e) {/*ignore exception*/}	
 		mouseDragged(event);
-		//TODO: myController.highlightLegalMoves(myPiece);
+		
 	}
 	
 	@Override
@@ -84,14 +87,16 @@ public class ChessBoardMouseAdapter extends MouseAdapter {
 		myLayeredPane.remove(myPiece);
 		
 		ChessPanel dropped = (ChessPanel) board.getComponentAt(translatePoint(board, event));
+		
 		if (dropped == null || !myController.isValidMove(myBoard, myPiece, dropped)) {
+			
 			myClickedPanel.add(myPiece);
 			reset();
 			return;
 		}
 
-		myController.makeMove(myPiece, dropped);
-		//TODO: unhighlight legal moves in makeMove?
+		myController.highlightLegalMoves(myPiece, false);
+		myController.makeMove(myPiece, dropped);	
 		reset();
 	}
 }

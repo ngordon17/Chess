@@ -61,21 +61,31 @@ public class Pawn extends AbstractPiece {
 		return -1 * num;
 	}
 	
-	private boolean hasMoved() {
-		if (isWhite) {return myRow != ChessBoard.BOARD_SIZE - 2;}
-		return myRow != 1;
+	public boolean isLegalEnPassantMove(ChessBoard board, int colDelta) {
+		ChessBoard last = board.getLastTurn();
+		if (last == null) {return false;}
+		ChessPanel panel;
+		if ((panel = last.getPanel(myRow + negate(2), myCol + colDelta)) != null && panel.getPiece() instanceof Pawn && !panel.getPiece().hasMoved) {
+			if (board.getPanel(myRow, myCol + colDelta) != null && (board.getPanel(myRow, myCol + colDelta).getPiece() instanceof Pawn) && board.getPanel(myRow, myCol + colDelta).getPiece().isWhite != isWhite) {
+				return true;
+			}
+		}
+		return false;		
 	}
 	
 	@Override
 	public List<ChessPanel> getLegalMoves(ChessBoard board) {
 		List<ChessPanel> legal = new ArrayList<ChessPanel>();
 		ChessPanel panel;
-		if ((panel = board.getPanel(myRow + negate(1), myCol)) != null && (panel.getPiece() == null || panel.getPiece().isWhite() != isWhite)) {legal.add(panel);}
-		if (panel != null && panel.getPiece() == null && !hasMoved() && ((panel = board.getPanel(myRow + negate(2), myCol)) != null) && (panel.getPiece() == null || panel.getPiece().isWhite() != isWhite)) {legal.add(panel);}
+		if ((panel = board.getPanel(myRow + negate(1), myCol)) != null && panel.getPiece() == null) {legal.add(panel);}
+		if (panel != null && panel.getPiece() == null && !hasMoved && ((panel = board.getPanel(myRow + negate(2), myCol)) != null) && panel.getPiece() == null) {legal.add(panel);}
 		
 		for (int col = -1 ; col <= 1; col += 2) {
 			if ((panel = board.getPanel(myRow + negate(1), myCol + col)) != null && panel.getPiece() != null && panel.getPiece().isWhite() != isWhite) {legal.add(panel);}
 		}
+		
+		if (isLegalEnPassantMove(board, -1)) {legal.add(board.getPanel(myRow + negate(1), myCol -1));}
+		if (isLegalEnPassantMove(board, 1)) {legal.add(board.getPanel(myRow + negate(1), myCol + 1));}
 		
 		return legal;
 	}

@@ -2,8 +2,7 @@ package pieces;
 
 import java.util.List;
 
-public class PieceFactory {
-	
+public class PieceFactory {	
 	AbstractPiece myPiece;
 	
 	public PieceFactory(AbstractPiece piece) {
@@ -13,5 +12,4 @@ public class PieceFactory {
 	public List<AbstractPiece> manufactureInitialPieces() {
 		return myPiece.manufactureInitialPieces();
 	}
-
 }

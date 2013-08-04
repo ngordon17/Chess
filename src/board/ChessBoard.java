@@ -5,20 +5,17 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import pieces.*;
 
 @SuppressWarnings("serial")
 public class ChessBoard extends JPanel {
-	//92, 52, 23
+	//TODO: put some of this into a resource bundle
 	private static final Color BORDER_COLOR = new Color(25, 25, 25);
 	private static final int BORDER_SIZE = 15;
 	public static final int BOARD_SIZE = 8;
-	
 	private ChessPanel[][] myPanels;
-	
 	private static ChessBoard myInstance;
 	private static Stack<ChessBoard> myUndoInstances;
 	
@@ -37,7 +34,6 @@ public class ChessBoard extends JPanel {
 		myPanels = tiles;
 	}
 	
-	
 	public static ChessBoard getInstance() {
 		if (myInstance == null) {myInstance = new ChessBoard();}
 		return myInstance;
@@ -55,6 +51,14 @@ public class ChessBoard extends JPanel {
 	
 	public void saveState() {
 		myUndoInstances.add(clone());
+	}
+	
+	public ChessBoard getLastTurn() {
+		if (myUndoInstances.isEmpty() || myUndoInstances.size() == 1) {return null;}
+		ChessBoard board1 = myUndoInstances.pop();
+		ChessBoard board2 = myUndoInstances.peek();
+		myUndoInstances.add(board1);
+		return board2;
 	}
 	
 	public void undoMove() {
@@ -147,7 +151,7 @@ public class ChessBoard extends JPanel {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
 				if ( panels[i][j].getPiece() == null) {System.out.print(String.format("|%10s|", "Empty"));}
-				else {System.out.print(String.format("|%10s|", panels[i][j].getPiece().toString() ));}	
+				else {System.out.print(String.format("|%10s|", panels[i][j].getPiece().toString()));}	
 			}
 			System.out.println();
 		}	
@@ -159,10 +163,21 @@ public class ChessBoard extends JPanel {
 		ChessPanel endCopy = copy.getPanel(end.getRow(), end.getCol());
 		
 		AbstractPiece piece = startCopy.getPiece();
+		
 		startCopy.removePiece();
 		endCopy.removePiece();
 		endCopy.add(piece);
 
 		return copy;
+	}
+	
+	public static boolean inCheck(ChessBoard board, boolean currentPlayer) {
+		ChessPanel panel = board.findKing(board, currentPlayer);
+		List<AbstractPiece> pieces = board.findOpposingPieces(board, currentPlayer);
+		for (AbstractPiece piece : pieces) {
+			//king can't take other king - do checking for this case in king's legal move.
+			if (!(piece instanceof King) && piece.isLegalMove(board, panel)) {return true;}
+		}
+		return false;
 	}
 }

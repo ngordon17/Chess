@@ -13,6 +13,7 @@ public abstract class AbstractPiece extends JLabel {
 	protected boolean isWhite;
 	protected int myRow;
 	protected int myCol;
+	protected boolean hasMoved = false;
 	
 	protected AbstractPiece(int row, int col, boolean white) {
 		myRow = row;
@@ -24,6 +25,7 @@ public abstract class AbstractPiece extends JLabel {
 	protected AbstractPiece(AbstractPiece piece) {
 		myRow = piece.myRow;
 		myCol = piece.myCol;
+		hasMoved = piece.hasMoved;
 		isWhite = piece.isWhite;
 		setIcon(getImageIcon(isWhite));
 	}
@@ -79,7 +81,15 @@ public abstract class AbstractPiece extends JLabel {
 	}	
 	
 	public void setBoardLocation(int row, int col) {
+		if (myRow != row || myCol != col) {
+			hasMoved = true;
+		}
+		
 		myRow = row;
 		myCol = col;
+	}
+
+	public void setHasMoved(boolean moved) {
+		hasMoved = moved;	
 	}
 }

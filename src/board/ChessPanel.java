@@ -1,12 +1,16 @@
 package board;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
+import controller.Controller;
 
 import pieces.AbstractPiece;
 
@@ -21,13 +25,14 @@ public class ChessPanel extends JPanel {
 	private AbstractPiece myPiece;
 	private int myRow;
 	private int myCol;
+	private boolean isHighlighted = false;
 	
 	public ChessPanel(int row, int col) {
 		setLayout(new BorderLayout());
 		setPreferredSize(PREFERRED_SIZE);
 		setIcon(row, col);
 		myRow = row;
-		myCol = col;		
+		myCol = col;	
 	}
 	
 	private ChessPanel(ChessPanel panel) {
@@ -54,6 +59,7 @@ public class ChessPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.drawImage(myIcon.getImage(), 0, 0, this);
+		
 	}
 	
 	@Override
@@ -63,6 +69,8 @@ public class ChessPanel extends JPanel {
 			myPiece = (AbstractPiece) component;
 			myPiece.setBoardLocation(myRow, myCol);
 		}
+		revalidate();
+		repaint();
 		return super.add(component);
 	}
 	
@@ -86,5 +94,13 @@ public class ChessPanel extends JPanel {
 	
 	public int getCol() {
 		return myCol;
+	}
+	
+	public void setHighlighted(boolean highlight) {
+		isHighlighted = highlight;
+		if (Controller.highlightLegalMoves && isHighlighted) {setBorder(BorderFactory.createLineBorder(Color.BLUE, 1));}
+		else {this.setBorder(null);}
+		revalidate();
+		repaint();
 	}
 }
