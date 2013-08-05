@@ -52,6 +52,12 @@ public class Knight extends AbstractPiece {
 		return initialPieces;
 	}
 	
+	
+	@Override
+	public Knight manufacture(int row, int col, boolean isWhite) {
+		return new Knight(row, col, isWhite);
+	}
+	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new Knight());
 	}

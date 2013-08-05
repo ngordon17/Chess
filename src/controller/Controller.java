@@ -11,7 +11,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -142,13 +141,50 @@ public class Controller {
 		}
 	}
 	
+	public void loadGame() {
+		try {
+			JFileChooser chooser = new JFileChooser();
+			chooser.setCurrentDirectory(new File(SAVE_DIRECTORY));
+			int load = chooser.showOpenDialog(myView);
+			if (load != JFileChooser.APPROVE_OPTION) {return;}
+
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			System.out.println(chooser.getSelectedFile());
+			Document doc = docBuilder.parse(chooser.getSelectedFile());
+	
+			
+			doc.getDocumentElement().normalize();
+			
+			loadSettings(doc);
+			myBoard.loadBoard(doc);
+			
+		
+			
+			
+			JOptionPane.showMessageDialog(myView, "Load Successful!", "Load Successful!", JOptionPane.INFORMATION_MESSAGE);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(myView, "Load Failed!", "Error!", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void loadSettings(Document doc) {
+		Element root = doc.getDocumentElement();
+		System.out.println(root);
+		Element settings = (Element) root.getFirstChild();
+		
+		String highlight = settings.getAttribute("highlight");
+		highlightLegalMoves = Boolean.parseBoolean(highlight);
+		return;
+	}
+	
 	public void saveGame() {
 		try {
 			
 			JFileChooser chooser = new JFileChooser();
 			chooser.setCurrentDirectory(new File(SAVE_DIRECTORY));
 			int save = chooser.showSaveDialog(myView);
-			
 			
 			if (save != JFileChooser.APPROVE_OPTION) {return;}
 			String file = chooser.getSelectedFile() + ".xml";
@@ -157,26 +193,31 @@ public class Controller {
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			Document doc = docBuilder.newDocument();
 			Element root = doc.createElement("game");
-			doc.appendChild(root);
-			saveSettings(doc, root);
-			root.appendChild(myBoard.saveBoard(doc));
 			
+			doc.appendChild(root);
+			root.appendChild(saveSettings(doc));
+				
+			root.appendChild(myBoard.saveBoard(doc));		
+				
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(new File(file));
 			transformer.transform(source,  result);
 			JOptionPane.showMessageDialog(myView, "File Saved!", "File Saved!", JOptionPane.INFORMATION_MESSAGE);
-						
+	
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(myView, "Save Failed!", "Error!", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();}
 	}
 	
-	private void saveSettings(Document doc, Element root) {
-		Element settings = doc.createElement("settings");
+	private Element saveSettings(Document doc) {
+		Element settings = doc.createElement("settings");	
 		settings.setAttribute("highlight", "true");
-		root.appendChild(settings);		
+
+		settings.setAttribute("ID", "settings");
+		settings.setIdAttribute("ID", true);
+		return settings;
 	}
 	
 

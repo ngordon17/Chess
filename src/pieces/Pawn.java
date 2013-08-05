@@ -52,6 +52,13 @@ public class Pawn extends AbstractPiece {
 		return initialPieces;
 	}
 	
+	
+	@Override
+	public Pawn manufacture(int row, int col, boolean isWhite) {
+		return new Pawn(row, col, isWhite);
+	}
+	
+	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new Pawn());
 	}

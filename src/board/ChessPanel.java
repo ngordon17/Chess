@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import controller.Controller;
 
@@ -111,14 +112,29 @@ public class ChessPanel extends JPanel {
 		Element panel = doc.createElement("panel");
 		panel.setAttribute("row", Integer.toString(myRow));
 		panel.setAttribute("col", Integer.toString(myCol));
-		panel.setAttribute("iconpath", myIcon.toString());
 		
 		if (myPiece != null) {
 			panel.appendChild(myPiece.savePiece(doc));
 		}
+	   
 		
 		return panel;
 		
 		
+	}
+
+	public static ChessPanel loadPanel(Node node) {
+		Element element = (Element) node;
+		int row = Integer.parseInt(element.getAttribute("row"));
+		int col = Integer.parseInt(element.getAttribute("col"));
+		ChessPanel panel = new ChessPanel(row, col);
+		
+		
+		if (element.getFirstChild() != null) {
+			panel.add(AbstractPiece.loadPiece(element.getFirstChild()));
+		}
+		
+		
+		return panel;
 	}
 }

@@ -52,6 +52,11 @@ public class Bishop extends AbstractPiece {
 		return initialPieces;
 	}
 	
+	@Override
+	public Bishop manufacture(int row, int col, boolean isWhite) {
+		return new Bishop(row, col, isWhite);
+	}
+	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new Bishop());
 	}

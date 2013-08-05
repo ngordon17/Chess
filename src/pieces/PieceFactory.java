@@ -9,6 +9,14 @@ public class PieceFactory {
 		myPiece = piece;
 	}
 	
+	public boolean isThisPiece(String name) {
+		return (name.split("-")[1]).equals(myPiece.toString().split("-")[1]);
+	}
+	
+	public AbstractPiece manufacturePiece(int row, int col, boolean isWhite) {
+		return myPiece.manufacture(row, col, isWhite);
+	}
+	
 	public List<AbstractPiece> manufactureInitialPieces() {
 		return myPiece.manufactureInitialPieces();
 	}

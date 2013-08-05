@@ -1,5 +1,6 @@
 package pieces;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -41,6 +42,7 @@ public abstract class AbstractPiece extends JLabel {
 	protected abstract String getPieceName();
 	public abstract ImageIcon getImageIcon(boolean isWhite);
 	public abstract List<AbstractPiece> manufactureInitialPieces();
+	public abstract AbstractPiece manufacture(int row, int col, boolean isWhite);
 	public abstract List<ChessPanel> getLegalMoves(ChessBoard board);
 
 	protected List<ChessPanel> getLegalMovesHelper(ChessBoard board, int deltaR, int deltaC) {
@@ -106,4 +108,35 @@ public abstract class AbstractPiece extends JLabel {
 		piece.setAttribute("name", toString());
 		return piece;
 	}
+
+	public static AbstractPiece loadPiece(Node node) {
+		Element element = (Element) node;
+		int row = Integer.parseInt(element.getAttribute("row"));
+		int col = Integer.parseInt(element.getAttribute("col"));
+		boolean moved = Boolean.parseBoolean(element.getAttribute("hasMoved"));
+		boolean white = Boolean.parseBoolean(element.getAttribute("isWhite"));
+		String name = element.getAttribute("name");
+		
+		AbstractPiece piece = null;
+		for (PieceFactory factory : getFactoryList()) {
+			if (factory.isThisPiece(name)) {
+				piece = factory.manufacturePiece(row, col, white);
+				piece.hasMoved = moved;
+			}
+		}
+		return piece;
+	}
+	
+	public static List<PieceFactory> getFactoryList() {
+		List<PieceFactory> factoryList = new ArrayList<PieceFactory>();
+		factoryList.add(Pawn.getFactory());
+		factoryList.add(Rook.getFactory());
+		factoryList.add(Knight.getFactory());
+		factoryList.add(Bishop.getFactory());
+		factoryList.add(Queen.getFactory());
+		factoryList.add(King.getFactory());
+		return factoryList;
+	}
+	
+
 }

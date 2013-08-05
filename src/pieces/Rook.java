@@ -52,6 +52,13 @@ public class Rook extends AbstractPiece {
 		return initialPieces;
 	}
 	
+	
+	@Override
+	public Rook manufacture(int row, int col, boolean isWhite) {
+		return new Rook(row, col, isWhite);
+	}
+	
+	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new Rook());
 	}

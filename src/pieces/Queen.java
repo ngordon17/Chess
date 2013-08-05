@@ -50,6 +50,13 @@ public class Queen extends AbstractPiece {
 		return initialPieces;
 	}
 	
+	
+	@Override
+	public Queen manufacture(int row, int col, boolean isWhite) {
+		return new Queen(row, col, isWhite);
+	}
+	
+	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new Queen());
 	}

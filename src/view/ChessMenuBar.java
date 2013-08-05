@@ -29,7 +29,13 @@ public class ChessMenuBar extends JMenuBar {
 		newGame.setEnabled(true);
 		fileMenu.add(newGame);
 		
-		JMenuItem saveGame = new JMenuItem("Save");
+		JMenuItem loadGame = new JMenuItem("Load");
+		loadGame.addActionListener(new LoadGameAction());
+		loadGame.setEnabled(true);
+		fileMenu.add(loadGame);
+		
+		
+		JMenuItem saveGame = new JMenuItem("Save As");
 		saveGame.addActionListener(new SaveGameAction());
 		saveGame.setEnabled(true);
 		fileMenu.add(saveGame);
@@ -78,6 +84,12 @@ public class ChessMenuBar extends JMenuBar {
 	private class SaveGameAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			myController.saveGame();
+		}
+	}
+	
+	private class LoadGameAction implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			myController.loadGame();
 		}
 	}
 

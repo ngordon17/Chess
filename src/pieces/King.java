@@ -50,6 +50,12 @@ public class King extends AbstractPiece {
 		return initialPieces;
 	}
 	
+	@Override
+	public King manufacture(int row, int col, boolean isWhite) {
+		return new King(row, col, isWhite);
+	}
+	
+	
 	public static PieceFactory getFactory() {
 		return new PieceFactory(new King());
 	}

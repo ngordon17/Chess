@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import pieces.*;
 
@@ -103,19 +105,10 @@ public class ChessBoard extends JPanel {
 		return myPanels[row][col];
 	}
 	
-	private List<PieceFactory> getFactoryList() {
-		List<PieceFactory> factoryList = new ArrayList<PieceFactory>();
-		factoryList.add(Pawn.getFactory());
-		factoryList.add(Rook.getFactory());
-		factoryList.add(Knight.getFactory());
-		factoryList.add(Bishop.getFactory());
-		factoryList.add(Queen.getFactory());
-		factoryList.add(King.getFactory());
-		return factoryList;
-	}
+
 	
 	private void initializePieces() {
-		for (PieceFactory factory : getFactoryList()) {
+		for (PieceFactory factory : AbstractPiece.getFactoryList()) {
 			List<AbstractPiece> initialPieces = factory.manufactureInitialPieces();
 			for (AbstractPiece piece : initialPieces) {
 				myPanels[piece.getRow()][piece.getCol()].removeAll();
@@ -187,7 +180,12 @@ public class ChessBoard extends JPanel {
 
 	public Element saveBoard(Document doc) {
 		Element board = doc.createElement("board");
+		board.setAttribute("ID", "board");
+		board.setIdAttribute("ID", true);
+		
 		Element panels = doc.createElement("panels");
+		panels.setAttribute("ID", "panels");
+		panels.setIdAttribute("ID", true);
 		
 		for (ChessPanel[] rows : myPanels) {
 			for (ChessPanel panel : rows) {
@@ -198,4 +196,34 @@ public class ChessBoard extends JPanel {
 		board.appendChild(panels);
 		return board;	
 	}
+	
+	public void loadBoard(Document doc) {
+		removeAll();
+		setLayout(new GridLayout(BOARD_SIZE, BOARD_SIZE, 0, 0));
+		setPreferredSize(new Dimension(ChessPanel.PREFERRED_SIZE.width * BOARD_SIZE + 2*BORDER_SIZE, ChessPanel.PREFERRED_SIZE.height * BOARD_SIZE + 2*BORDER_SIZE));
+		setBorder(BorderFactory.createMatteBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_COLOR));	
+		
+		
+		Element root = doc.getDocumentElement();
+		Element board = (Element) root.getLastChild();
+		
+		
+		//Element board = doc.getElementById("board");
+		Element temp = (Element) board.getFirstChild();
+		NodeList panels = temp.getChildNodes();
+		
+		for (int i = 0; i < panels.getLength(); i++) {
+			Node node = panels.item(i);
+			ChessPanel panel = ChessPanel.loadPanel(node);
+			myPanels[panel.getRow()][panel.getCol()] = panel;
+			add(myPanels[panel.getRow()][panel.getCol()]);		
+		}
+		
+		initializeUndoInstances();
+		revalidate();
+		repaint();
+		
+	}
+
+	
 }
